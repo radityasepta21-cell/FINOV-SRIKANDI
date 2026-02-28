@@ -1,0 +1,2056 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finov-Srikandi — Manajer Keuangan Cerdas</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d0f14;
+        --surface: #161a23;
+        --surface2: #1e2330;
+        --border: #2a3040;
+        --gold: #c9a84c;
+        --gold-light: #e8c97a;
+        --green: #4caf7d;
+        --green-glow: rgba(76, 175, 125, 0.15);
+        --yellow: #f0b429;
+        --red: #e05c5c;
+        --red-glow: rgba(224, 92, 92, 0.15);
+        --blue: #5b8dee;
+        --text: #e8ecf4;
+        --text-muted: #6b7a99;
+        --text-dim: #3d4a63;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Background texture */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 40% at 20% 0%,
+            rgba(201, 168, 76, 0.06) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 60% at 80% 100%,
+            rgba(91, 141, 238, 0.05) 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* HEADER */
+      header {
+        padding: 32px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+
+      .logo-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .logo-icon {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      .logo-text {
+        font-family: "Playfair Display", serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+
+      .logo-text span {
+        color: var(--gold);
+      }
+
+      .logo-sub {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 1px;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+
+      /* SECTION TITLE */
+      .section-title {
+        font-family: "Playfair Display", serif;
+        font-size: 13px;
+        font-weight: 400;
+        font-style: italic;
+        color: var(--gold);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .section-heading {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .section-desc {
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 28px;
+      }
+
+      /* STEP TABS */
+      .steps-nav {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 36px;
+        background: var(--surface);
+        padding: 5px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+      }
+
+      .step-btn {
+        flex: 1;
+        padding: 10px 12px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        white-space: nowrap;
+      }
+
+      .step-btn:hover {
+        color: var(--text);
+        background: var(--surface2);
+      }
+
+      .step-btn.active {
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        color: #0d0f14;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3);
+      }
+
+      .step-num {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+
+      .step-btn.active .step-num {
+        background: rgba(0, 0, 0, 0.25);
+        color: #0d0f14;
+      }
+
+      /* PANEL */
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* CARD */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card-title .icon {
+        font-size: 18px;
+      }
+
+      /* INPUT GRID */
+      .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      @media (max-width: 600px) {
+        .input-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .input-group label {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        letter-spacing: 0.3px;
+      }
+
+      .input-group input {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 14px;
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        outline: none;
+      }
+
+      .input-group input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+      }
+
+      .input-group input::placeholder {
+        color: var(--text-dim);
+      }
+
+      .input-hint {
+        font-size: 11px;
+        color: var(--text-dim);
+        font-style: italic;
+      }
+
+      /* BUTTON */
+      .btn-primary {
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        color: #0d0f14;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 28px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        letter-spacing: 0.3px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 20px rgba(201, 168, 76, 0.25);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 28px rgba(201, 168, 76, 0.35);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      /* RESULT PANEL */
+      .result-section {
+        margin-top: 28px;
+        display: none;
+      }
+
+      .result-section.show {
+        display: block;
+        animation: fadeIn 0.4s ease;
+      }
+
+      /* POS GRID */
+      .pos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+
+      .pos-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s;
+      }
+
+      .pos-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .pos-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+      }
+
+      .pos-card.kebutuhan::before {
+        background: var(--green);
+      }
+      .pos-card.keinginan::before {
+        background: var(--yellow);
+      }
+      .pos-card.darurat::before {
+        background: var(--blue);
+      }
+      .pos-card.inovasi::before {
+        background: var(--gold);
+      }
+      .pos-card.investasi::before {
+        background: #a78bfa;
+      }
+
+      .pos-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      .pos-persen {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .pos-card.kebutuhan .pos-persen {
+        color: var(--green);
+      }
+      .pos-card.keinginan .pos-persen {
+        color: var(--yellow);
+      }
+      .pos-card.darurat .pos-persen {
+        color: var(--blue);
+      }
+      .pos-card.inovasi .pos-persen {
+        color: var(--gold);
+      }
+      .pos-card.investasi .pos-persen {
+        color: #a78bfa;
+      }
+
+      .pos-nominal {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .pos-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+
+      /* PROGRESS BAR */
+      .allocation-bar {
+        background: var(--surface2);
+        border-radius: 100px;
+        height: 12px;
+        overflow: hidden;
+        display: flex;
+        margin-bottom: 12px;
+      }
+
+      .bar-seg {
+        height: 100%;
+        transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .bar-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      /* DARURAT METER */
+      .dana-darurat-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .meter-container {
+        margin: 16px 0;
+        position: relative;
+      }
+
+      .meter-track {
+        height: 10px;
+        background: var(--border);
+        border-radius: 100px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .meter-fill {
+        height: 100%;
+        border-radius: 100px;
+        transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        background: linear-gradient(90deg, var(--blue), #7ab3f5);
+      }
+
+      .meter-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: var(--text-dim);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+      }
+
+      .status-badge.hijau {
+        background: var(--green-glow);
+        color: var(--green);
+        border: 1px solid rgba(76, 175, 125, 0.3);
+      }
+      .status-badge.kuning {
+        background: rgba(240, 180, 41, 0.12);
+        color: var(--yellow);
+        border: 1px solid rgba(240, 180, 41, 0.3);
+      }
+      .status-badge.merah {
+        background: var(--red-glow);
+        color: var(--red);
+        border: 1px solid rgba(224, 92, 92, 0.3);
+      }
+
+      /* TABLE */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .data-table th {
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .data-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(42, 48, 64, 0.5);
+        color: var(--text);
+        vertical-align: middle;
+      }
+
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* SAFE LIMIT INDICATOR */
+      .safe-gauge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 0 16px;
+      }
+
+      .gauge-circle {
+        width: 140px;
+        height: 140px;
+        position: relative;
+        margin-bottom: 16px;
+      }
+
+      .gauge-svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .gauge-bg {
+        fill: none;
+        stroke: var(--surface2);
+        stroke-width: 10;
+      }
+      .gauge-fill {
+        fill: none;
+        stroke-width: 10;
+        stroke-linecap: round;
+        transition:
+          stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+          stroke 0.5s;
+      }
+
+      .gauge-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .gauge-val {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .gauge-unit {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      /* CVP SECTION */
+      .cvp-result {
+        background: var(--surface2);
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        margin-top: 16px;
+      }
+
+      .cvp-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(42, 48, 64, 0.6);
+        font-size: 13px;
+      }
+
+      .cvp-row:last-child {
+        border-bottom: none;
+      }
+      .cvp-row .label {
+        color: var(--text-muted);
+      }
+      .cvp-row .value {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .cvp-row .value.highlight {
+        color: var(--gold);
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+      }
+
+      /* SIMULASI SKENARIO */
+      .scenario-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      @media (max-width: 700px) {
+        .scenario-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .scenario-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .scenario-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-2px);
+      }
+      .scenario-card.selected {
+        border-color: var(--gold);
+        background: rgba(201, 168, 76, 0.06);
+      }
+
+      .scenario-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      .scenario-name {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .scenario-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      /* TIPS BOX */
+      .tips-box {
+        background: rgba(201, 168, 76, 0.06);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-top: 16px;
+      }
+
+      .tips-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gold);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .tips-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .tips-list li {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        display: flex;
+        gap: 8px;
+      }
+
+      .tips-list li::before {
+        content: "→";
+        color: var(--gold);
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* ILR Display */
+      .ilr-display {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        background: var(--surface2);
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .ilr-number {
+        font-family: "Playfair Display", serif;
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1;
+        min-width: 100px;
+        text-align: center;
+      }
+
+      .ilr-info {
+        flex: 1;
+      }
+      .ilr-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .ilr-desc {
+        font-size: 13px;
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 24px 0;
+      }
+
+      /* Inline number formatting */
+      .currency {
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Custom range */
+      input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: var(--border);
+        border-radius: 100px;
+        outline: none;
+        margin: 8px 0;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--gold);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(201, 168, 76, 0.4);
+        transition: transform 0.15s;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      .range-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .range-val {
+        color: var(--gold);
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      /* Footer note */
+      .footer-note {
+        text-align: center;
+        padding: 32px 0 48px;
+        font-size: 12px;
+        color: var(--text-dim);
+        letter-spacing: 0.3px;
+      }
+
+      .footer-note span {
+        color: var(--gold);
+      }
+
+      /* Responsive tab labels */
+      @media (max-width: 680px) {
+        .step-btn {
+          font-size: 12px;
+          padding: 9px 8px;
+        }
+        .step-label {
+          display: none;
+        }
+      }
+
+      /* Highlight color override input */
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo-row">
+          <div class="logo-icon">💎</div>
+          <div>
+            <div class="logo-text">Finov-<span>Srikandi</span></div>
+            <div class="logo-sub">Manajer Keuangan Cerdas UMKM Perempuan</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- STEP TABS -->
+      <nav class="steps-nav">
+        <button class="step-btn active" onclick="goTo(0)">
+          <span class="step-num">1</span>
+          <span class="step-label">Input Keuangan</span>
+        </button>
+        <button class="step-btn" onclick="goTo(1)">
+          <span class="step-num">2</span>
+          <span class="step-label">Alokasi Pos</span>
+        </button>
+        <button class="step-btn" onclick="goTo(2)">
+          <span class="step-num">3</span>
+          <span class="step-label">Dana Darurat</span>
+        </button>
+        <button class="step-btn" onclick="goTo(3)">
+          <span class="step-num">4</span>
+          <span class="step-label">Safe Limit</span>
+        </button>
+        <button class="step-btn" onclick="goTo(4)">
+          <span class="step-num">5</span>
+          <span class="step-label">Target CVP</span>
+        </button>
+      </nav>
+
+      <!-- ============================
+       PANEL 1: INPUT KEUANGAN
+  ============================= -->
+      <div class="panel active" id="panel-0">
+        <div class="section-title">Langkah 1</div>
+        <div class="section-heading">Input Data Keuangan</div>
+        <div class="section-desc">
+          Masukkan data keuangan usaha dan rumah tangga kamu untuk mendapatkan
+          analisis yang akurat.
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🏠</span> Keuangan Rumah Tangga
+          </div>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Penghasilan / Omzet Bulanan (Rp)</label>
+              <input
+                type="number"
+                id="omzet"
+                placeholder="cth: 10000000"
+                oninput="updateLive()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Pengeluaran Rumah Tangga / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="kebutuhan"
+                placeholder="cth: 3000000"
+                oninput="updateLive()"
+              />
+              <span class="input-hint"
+                >Makan, tagihan, transport, sekolah, dll</span
+              >
+            </div>
+            <div class="input-group">
+              <label>Pengeluaran Keinginan / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="keinginan"
+                placeholder="cth: 1000000"
+                oninput="updateLive()"
+              />
+              <span class="input-hint">Hiburan, belanja non-esensial</span>
+            </div>
+            <div class="input-group">
+              <label>Tabungan / Dana Darurat Saat Ini (Rp)</label>
+              <input
+                type="number"
+                id="tabungan"
+                placeholder="cth: 5000000"
+                oninput="updateLive()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🏪</span> Data Usaha / UMKM
+          </div>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Biaya Operasional Tetap / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="fixedCost"
+                placeholder="cth: 2000000"
+                oninput="updateLive()"
+              />
+              <span class="input-hint">Sewa, gaji karyawan tetap, listrik</span>
+            </div>
+            <div class="input-group">
+              <label>Harga Jual per Unit (Rp)</label>
+              <input
+                type="number"
+                id="hargaJual"
+                placeholder="cth: 50000"
+                oninput="updateLive()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Biaya Variabel per Unit (Rp)</label>
+              <input
+                type="number"
+                id="hargaVar"
+                placeholder="cth: 25000"
+                oninput="updateLive()"
+              />
+              <span class="input-hint">Bahan baku, kemasan per produk</span>
+            </div>
+            <div class="input-group">
+              <label>Target Laba Bersih / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="targetLaba"
+                placeholder="cth: 2000000"
+                oninput="updateLive()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🚀</span> Rencana Inovasi / Investasi
+          </div>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Anggaran Inovasi / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="inovasiBudget"
+                placeholder="cth: 500000"
+                oninput="updateLive()"
+              />
+              <span class="input-hint">Pengembangan produk, pelatihan</span>
+            </div>
+            <div class="input-group">
+              <label>Anggaran Investasi / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="investasiBudget"
+                placeholder="cth: 500000"
+                oninput="updateLive()"
+              />
+              <span class="input-hint">Beli aset, reksa dana, dll</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="hitungSemua()">
+          ✦ Analisis Keuangan Saya
+        </button>
+      </div>
+
+      <!-- ============================
+       PANEL 2: ALOKASI POS
+  ============================= -->
+      <div class="panel" id="panel-1">
+        <div class="section-title">Langkah 2</div>
+        <div class="section-heading">Alokasi Pos Keuangan</div>
+        <div class="section-desc">
+          Distribusi penghasilanmu ke berbagai pos berdasarkan data yang kamu
+          masukkan.
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">📊</span> Visualisasi Alokasi
+          </div>
+          <div class="allocation-bar" id="alloc-bar"></div>
+          <div class="bar-legend" id="bar-legend"></div>
+          <div class="pos-grid" id="pos-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="icon">📋</span> Rincian Pos</div>
+          <table class="data-table" id="pos-table">
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Nominal</th>
+                <th>Persentase</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="pos-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="tips-box" id="alokasi-tips">
+          <div class="tips-title">💡 Panduan Alokasi Ideal</div>
+          <ul class="tips-list">
+            <li>
+              Kebutuhan dasar idealnya <strong>≤ 50%</strong> dari penghasilan
+              (prinsip 50/30/20)
+            </li>
+            <li>Keinginan sebaiknya <strong>≤ 30%</strong> agar tidak boros</li>
+            <li>
+              Alokasi untuk inovasi dan investasi minimal
+              <strong>10–20%</strong> agar usaha berkembang
+            </li>
+            <li>
+              Dana darurat adalah prioritas sebelum berani berinovasi besar
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ============================
+       PANEL 3: DANA DARURAT
+  ============================= -->
+      <div class="panel" id="panel-2">
+        <div class="section-title">Langkah 3</div>
+        <div class="section-heading">Panduan Dana Darurat</div>
+        <div class="section-desc">
+          Dana darurat adalah benteng keuangan keluarga. Tanpa ini, inovasi
+          berisiko mengguncang stabilitas rumah tangga.
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🛡️</span> Posisi Dana Darurat Kamu
+          </div>
+          <div class="dana-darurat-card">
+            <div
+              id="dd-status-text"
+              style="
+                font-size: 13px;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+              "
+            ></div>
+            <div class="meter-container">
+              <div class="meter-track">
+                <div class="meter-fill" id="dd-meter" style="width: 0%"></div>
+              </div>
+              <div class="meter-labels">
+                <span>Rp 0</span>
+                <span id="dd-label-mid"></span>
+                <span id="dd-label-max"></span>
+              </div>
+            </div>
+            <div id="dd-badge"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🔢</span> Kalkulator Dana Darurat Ideal
+          </div>
+          <div id="dd-calc-table"></div>
+          <div class="tips-box">
+            <div class="tips-title">📌 Aturan Dana Darurat</div>
+            <ul class="tips-list">
+              <li>
+                <strong>Lajang / tanpa tanggungan:</strong> minimal 3 bulan
+                pengeluaran
+              </li>
+              <li>
+                <strong>Menikah / 1–2 tanggungan:</strong> minimal 6 bulan
+                pengeluaran
+              </li>
+              <li>
+                <strong>Tanggungan banyak / usaha fluktuatif:</strong> minimal
+                9–12 bulan
+              </li>
+              <li>Simpan di tabungan terpisah, bukan dompet sehari-hari</li>
+              <li>
+                Jangan sentuh kecuali darurat sungguhan (PHK, sakit, bencana)
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">📅</span> Simulasi: Berapa Lama Sampai Aman?
+          </div>
+          <div style="padding: 10px 0">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                font-weight: 500;
+              "
+              >Berapa bulan target saya?</label
+            >
+            <input
+              type="range"
+              id="dd-target-range"
+              min="3"
+              max="12"
+              value="6"
+              oninput="updateDDSim()"
+            />
+            <div class="range-row">
+              <span>3 bln</span>
+              <span class="range-val" id="dd-range-val">6 bulan</span>
+              <span>12 bln</span>
+            </div>
+          </div>
+          <div
+            id="dd-sim-result"
+            style="
+              margin-top: 12px;
+              font-size: 13px;
+              color: var(--text-muted);
+              line-height: 1.6;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <!-- ============================
+       PANEL 4: SAFE LIMIT INOVASI
+  ============================= -->
+      <div class="panel" id="panel-3">
+        <div class="section-title">Langkah 4</div>
+        <div class="section-heading">Safe Limit Indicator</div>
+        <div class="section-desc">
+          Sebelum berani berinovasi, ketahui dulu apakah keuanganmu cukup aman.
+          Masukkan rencana belanja inovasi.
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🎯</span> Uji Kelayakan Inovasi
+          </div>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Kas / Dana Tunai Saat Ini (Rp)</label>
+              <input
+                type="number"
+                id="sl-kas"
+                placeholder="cth: 20000000"
+                oninput="updateSafeLimitLive()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Rencana Belanja Inovasi (Rp)</label>
+              <input
+                type="number"
+                id="sl-inovasi"
+                placeholder="cth: 15000000"
+                oninput="updateSafeLimitLive()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Biaya Hidup Bulanan (Rp)</label>
+              <input
+                type="number"
+                id="sl-hidup"
+                placeholder="cth: 3000000"
+                oninput="updateSafeLimitLive()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Buffer Wajib (bulan)</label>
+              <input
+                type="range"
+                id="sl-buffer"
+                min="1"
+                max="6"
+                value="3"
+                oninput="updateSafeLimitLive()"
+                style="margin-top: 8px"
+              />
+              <div class="range-row" style="margin-top: 4px">
+                <span style="font-size: 11px; color: var(--text-dim)"
+                  >1 bln</span
+                >
+                <span class="range-val" id="sl-buffer-val">3 bulan</span>
+                <span style="font-size: 11px; color: var(--text-dim)"
+                  >6 bln</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="sl-result-card" style="display: none">
+          <div class="card-title">
+            <span class="icon">⚡</span> Hasil Analisis ILR
+          </div>
+
+          <div class="ilr-display">
+            <div>
+              <div
+                class="ilr-number"
+                id="ilr-number"
+                style="color: var(--green)"
+              >
+                —
+              </div>
+              <div
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  margin-top: 4px;
+                "
+              >
+                ILR Score
+              </div>
+            </div>
+            <div class="ilr-info">
+              <div class="ilr-label">Innovation Liquidity Ratio</div>
+              <div class="ilr-desc" id="ilr-desc">
+                Masukkan data untuk melihat skor ILR kamu.
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="display: flex; justify-content: center; margin-bottom: 24px"
+          >
+            <div class="safe-gauge">
+              <div class="gauge-circle">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                  <circle
+                    class="gauge-bg"
+                    cx="60"
+                    cy="60"
+                    r="50"
+                    stroke-dasharray="283"
+                    stroke-dashoffset="70"
+                  ></circle>
+                  <circle
+                    class="gauge-fill"
+                    id="gauge-fill"
+                    cx="60"
+                    cy="60"
+                    r="50"
+                    stroke-dasharray="283"
+                    stroke-dashoffset="283"
+                  ></circle>
+                </svg>
+                <div class="gauge-label">
+                  <div class="gauge-val" id="gauge-val">—</div>
+                  <div class="gauge-unit">ILR</div>
+                </div>
+              </div>
+              <div id="gauge-status-badge"></div>
+            </div>
+          </div>
+
+          <div id="sl-breakdown"></div>
+
+          <div class="tips-box" id="sl-tips-box">
+            <div class="tips-title">💡 Rekomendasi</div>
+            <ul class="tips-list" id="sl-tips-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================
+       PANEL 5: TARGET CVP
+  ============================= -->
+      <div class="panel" id="panel-4">
+        <div class="section-title">Langkah 5</div>
+        <div class="section-heading">Target Penjualan CVP — Dapur Aman</div>
+        <div class="section-desc">
+          Berapa unit yang harus kamu jual agar inovasi tidak mengganggu
+          kebutuhan dapur? Sistem ini menghitung target penjualan yang telah
+          mengunci kebutuhan rumah tangga.
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🔧</span> Parameter CVP
+          </div>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Biaya Tetap Bisnis / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="cvp-fixed"
+                placeholder="Biaya sewa, gaji, dll"
+                oninput="updateCVP()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Biaya Inovasi / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="cvp-inovasi"
+                placeholder="Biaya investasi inovasi"
+                oninput="updateCVP()"
+              />
+            </div>
+            <div class="input-group">
+              <label>🔒 Dana Dapur (Rumah Tangga) / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="cvp-dapur"
+                placeholder="Kebutuhan pokok keluarga"
+                oninput="updateCVP()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Harga Jual per Unit (Rp)</label>
+              <input
+                type="number"
+                id="cvp-harga"
+                placeholder="cth: 50000"
+                oninput="updateCVP()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Biaya Variabel per Unit (Rp)</label>
+              <input
+                type="number"
+                id="cvp-var"
+                placeholder="cth: 25000"
+                oninput="updateCVP()"
+              />
+            </div>
+            <div class="input-group">
+              <label>Target Laba Bersih / Bulan (Rp)</label>
+              <input
+                type="number"
+                id="cvp-laba"
+                placeholder="cth: 2000000"
+                oninput="updateCVP()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div id="cvp-result-section" style="display: none">
+          <div class="card">
+            <div class="card-title">
+              <span class="icon">📈</span> Hasil Kalkulasi CVP —
+              Behavioral-Adjusted
+            </div>
+            <div class="cvp-result" id="cvp-result"></div>
+          </div>
+
+          <!-- Skenario Simulator -->
+          <div class="card">
+            <div class="card-title">
+              <span class="icon">🧪</span> Simulator Skenario "What-If"
+            </div>
+            <p
+              style="
+                font-size: 13px;
+                color: var(--text-muted);
+                margin-bottom: 16px;
+              "
+            >
+              Simulasikan dampak perubahan kondisi pasar terhadap ketahanan
+              kasmu.
+            </p>
+            <div class="scenario-grid">
+              <div
+                class="scenario-card selected"
+                id="sc-normal"
+                onclick="simSkenario('normal', this)"
+              >
+                <div class="scenario-icon">😊</div>
+                <div class="scenario-name">Normal</div>
+                <div class="scenario-desc">
+                  Omzet sesuai target, kondisi stabil
+                </div>
+              </div>
+              <div
+                class="scenario-card"
+                id="sc-turun"
+                onclick="simSkenario('turun', this)"
+              >
+                <div class="scenario-icon">📉</div>
+                <div class="scenario-name">Turun 30%</div>
+                <div class="scenario-desc">Omzet turun 30% dari target</div>
+              </div>
+              <div
+                class="scenario-card"
+                id="sc-naik"
+                onclick="simSkenario('naik', this)"
+              >
+                <div class="scenario-icon">🚀</div>
+                <div class="scenario-name">Naik 40%</div>
+                <div class="scenario-desc">Omzet naik 40% melampaui target</div>
+              </div>
+            </div>
+            <div id="sim-result" style="margin-top: 16px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Dibuat dengan ♥ terinspirasi dari riset <span>Finov-Srikandi</span> ·
+        Universitas Brawijaya 2026
+      </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // STATE
+      // ============================================================
+      let state = {
+        omzet: 0,
+        kebutuhan: 0,
+        keinginan: 0,
+        tabungan: 0,
+        fixedCost: 0,
+        hargaJual: 0,
+        hargaVar: 0,
+        targetLaba: 0,
+        inovasiBudget: 0,
+        investasiBudget: 0,
+      };
+
+      let cvpState = {};
+      let currentPanel = 0;
+
+      // ============================================================
+      // NAVIGATION
+      // ============================================================
+      function goTo(idx) {
+        document.querySelectorAll(".panel").forEach((p, i) => {
+          p.classList.toggle("active", i === idx);
+        });
+        document.querySelectorAll(".step-btn").forEach((b, i) => {
+          b.classList.toggle("active", i === idx);
+        });
+        currentPanel = idx;
+      }
+
+      // ============================================================
+      // FORMAT
+      // ============================================================
+      function fmt(n) {
+        if (!n && n !== 0) return "—";
+        return "Rp " + Math.round(n).toLocaleString("id-ID");
+      }
+
+      function fmtNum(n) {
+        return Math.round(n).toLocaleString("id-ID");
+      }
+
+      // ============================================================
+      // READ INPUTS
+      // ============================================================
+      function readInputs() {
+        state.omzet = parseFloat(document.getElementById("omzet").value) || 0;
+        state.kebutuhan =
+          parseFloat(document.getElementById("kebutuhan").value) || 0;
+        state.keinginan =
+          parseFloat(document.getElementById("keinginan").value) || 0;
+        state.tabungan =
+          parseFloat(document.getElementById("tabungan").value) || 0;
+        state.fixedCost =
+          parseFloat(document.getElementById("fixedCost").value) || 0;
+        state.hargaJual =
+          parseFloat(document.getElementById("hargaJual").value) || 0;
+        state.hargaVar =
+          parseFloat(document.getElementById("hargaVar").value) || 0;
+        state.targetLaba =
+          parseFloat(document.getElementById("targetLaba").value) || 0;
+        state.inovasiBudget =
+          parseFloat(document.getElementById("inovasiBudget").value) || 0;
+        state.investasiBudget =
+          parseFloat(document.getElementById("investasiBudget").value) || 0;
+      }
+
+      function updateLive() {
+        readInputs();
+      }
+
+      // ============================================================
+      // MAIN CALCULATION
+      // ============================================================
+      function hitungSemua() {
+        readInputs();
+
+        if (state.omzet <= 0) {
+          alert("Masukkan penghasilan / omzet bulanan terlebih dahulu.");
+          return;
+        }
+
+        renderAlokasi();
+        renderDanaDarurat();
+        preFillPanels();
+        goTo(1);
+      }
+
+      // ============================================================
+      // PANEL 2: ALOKASI
+      // ============================================================
+      function renderAlokasi() {
+        const { omzet, kebutuhan, keinginan, inovasiBudget, investasiBudget } =
+          state;
+
+        const daruratAlokasi = omzet * 0.1; // 10% default untuk menabung darurat
+        const totalKeluar =
+          kebutuhan +
+          keinginan +
+          inovasiBudget +
+          investasiBudget +
+          daruratAlokasi;
+        const sisa = omzet - totalKeluar;
+
+        const items = [
+          {
+            key: "kebutuhan",
+            label: "Kebutuhan Dasar",
+            val: kebutuhan,
+            color: "#4caf7d",
+            cls: "kebutuhan",
+          },
+          {
+            key: "keinginan",
+            label: "Keinginan",
+            val: keinginan,
+            color: "#f0b429",
+            cls: "keinginan",
+          },
+          {
+            key: "darurat",
+            label: "Dana Darurat",
+            val: daruratAlokasi,
+            color: "#5b8dee",
+            cls: "darurat",
+          },
+          {
+            key: "inovasi",
+            label: "Inovasi",
+            val: inovasiBudget,
+            color: "#c9a84c",
+            cls: "inovasi",
+          },
+          {
+            key: "investasi",
+            label: "Investasi",
+            val: investasiBudget,
+            color: "#a78bfa",
+            cls: "investasi",
+          },
+        ];
+
+        // Bar
+        const bar = document.getElementById("alloc-bar");
+        bar.innerHTML = items
+          .map((it) => {
+            const pct = omzet > 0 ? (it.val / omzet) * 100 : 0;
+            return `<div class="bar-seg" style="width:${pct}%; background:${it.color};"></div>`;
+          })
+          .join("");
+
+        // Legend
+        const legend = document.getElementById("bar-legend");
+        legend.innerHTML = items
+          .map(
+            (it) => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${it.color};"></div>
+      <span>${it.label}</span>
+    </div>
+  `,
+          )
+          .join("");
+
+        // POS GRID
+        const grid = document.getElementById("pos-grid");
+        grid.innerHTML = items
+          .map((it) => {
+            const pct = omzet > 0 ? ((it.val / omzet) * 100).toFixed(1) : "0.0";
+            const idealText = getIdealDesc(it.key);
+            return `
+      <div class="pos-card ${it.cls}">
+        <div class="pos-label">${it.label}</div>
+        <div class="pos-persen">${pct}%</div>
+        <div class="pos-nominal currency">${fmt(it.val)}</div>
+        <div class="pos-desc">${idealText}</div>
+      </div>
+    `;
+          })
+          .join("");
+
+        // TABLE
+        const tbody = document.getElementById("pos-tbody");
+        tbody.innerHTML = items
+          .map((it) => {
+            const pct = omzet > 0 ? ((it.val / omzet) * 100).toFixed(1) : "0.0";
+            const { badge, text } = getStatusBadge(it.key, parseFloat(pct));
+            return `
+      <tr>
+        <td><span style="color:${it.color}; font-weight:600;">${it.label}</span></td>
+        <td class="currency">${fmt(it.val)}</td>
+        <td>${pct}%</td>
+        <td><span class="status-badge ${badge}">${text}</span></td>
+      </tr>
+    `;
+          })
+          .join("");
+
+        // Sisa
+        if (sisa !== 0) {
+          const sisakls = sisa >= 0 ? "hijau" : "merah";
+          tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:600; color:var(--text);">Sisa / Surplus</td>
+        <td class="currency">${fmt(Math.abs(sisa))}</td>
+        <td>—</td>
+        <td><span class="status-badge ${sisakls}">${sisa >= 0 ? "✓ Surplus" : "⚠ Defisit"}</span></td>
+      </tr>
+    `;
+        }
+      }
+
+      function getIdealDesc(key) {
+        const d = {
+          kebutuhan: "Ideal ≤ 50% omzet",
+          keinginan: "Ideal ≤ 30% omzet",
+          darurat: "Ideal 10% sampai terpenuhi",
+          inovasi: "Ideal 5–15% omzet",
+          investasi: "Ideal ≥ 10% omzet",
+        };
+        return d[key] || "";
+      }
+
+      function getStatusBadge(key, pct) {
+        if (key === "kebutuhan") {
+          if (pct <= 50) return { badge: "hijau", text: "✓ Ideal" };
+          if (pct <= 60) return { badge: "kuning", text: "⚠ Waspada" };
+          return { badge: "merah", text: "✗ Terlalu Besar" };
+        }
+        if (key === "keinginan") {
+          if (pct <= 30) return { badge: "hijau", text: "✓ Ideal" };
+          if (pct <= 40) return { badge: "kuning", text: "⚠ Waspada" };
+          return { badge: "merah", text: "✗ Terlalu Besar" };
+        }
+        if (key === "darurat") return { badge: "hijau", text: "✓ Ditabung" };
+        if (key === "inovasi") {
+          if (pct >= 5 && pct <= 20) return { badge: "hijau", text: "✓ Ideal" };
+          if (pct < 5) return { badge: "kuning", text: "⚠ Kecil" };
+          return { badge: "kuning", text: "⚠ Perhatikan" };
+        }
+        if (key === "investasi") {
+          if (pct >= 10) return { badge: "hijau", text: "✓ Ideal" };
+          return { badge: "kuning", text: "⚠ Tambah Porsi" };
+        }
+        return { badge: "hijau", text: "✓ OK" };
+      }
+
+      // ============================================================
+      // PANEL 3: DANA DARURAT
+      // ============================================================
+      function renderDanaDarurat() {
+        const pengeluaran = state.kebutuhan;
+        const tabungan = state.tabungan;
+
+        if (pengeluaran <= 0) {
+          document.getElementById("dd-status-text").textContent =
+            "Masukkan pengeluaran rumah tangga di Panel 1.";
+          return;
+        }
+
+        const target3 = pengeluaran * 3;
+        const target6 = pengeluaran * 6;
+        const target12 = pengeluaran * 12;
+
+        const pct = Math.min((tabungan / target6) * 100, 100);
+        document.getElementById("dd-meter").style.width = pct + "%";
+        document.getElementById("dd-label-mid").textContent =
+          fmt(target6) + " (6 bln)";
+        document.getElementById("dd-label-max").textContent = fmt(target12);
+
+        const bulanTersedia =
+          pengeluaran > 0 ? (tabungan / pengeluaran).toFixed(1) : 0;
+        document.getElementById("dd-status-text").innerHTML = `
+    Dana darurat kamu saat ini sebesar <strong>${fmt(tabungan)}</strong> — setara <strong>${bulanTersedia} bulan</strong> pengeluaran.
+  `;
+
+        let badge;
+        if (tabungan >= target6)
+          badge = `<span class="status-badge hijau">✓ Sudah Aman (≥6 bulan)</span>`;
+        else if (tabungan >= target3)
+          badge = `<span class="status-badge kuning">⚠ Cukup (3–6 bulan)</span>`;
+        else
+          badge = `<span class="status-badge merah">✗ Perlu Ditambah (&lt;3 bulan)</span>`;
+        document.getElementById("dd-badge").innerHTML = badge;
+
+        // Kalkulator tabel
+        document.getElementById("dd-calc-table").innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Skenario</th><th>Target Dana</th><th>Sudah Terkumpul</th><th>Kekurangan</th></tr></thead>
+      <tbody>
+        ${[3, 6, 9, 12]
+          .map((bln) => {
+            const target = pengeluaran * bln;
+            const kurang = Math.max(0, target - tabungan);
+            const status =
+              tabungan >= target
+                ? `<span class="status-badge hijau">✓ Terpenuhi</span>`
+                : `<span class="status-badge merah">✗ ${fmt(kurang)}</span>`;
+            return `<tr>
+            <td><strong>${bln} bulan</strong></td>
+            <td class="currency">${fmt(target)}</td>
+            <td class="currency">${fmt(Math.min(tabungan, target))}</td>
+            <td>${status}</td>
+          </tr>`;
+          })
+          .join("")}
+      </tbody>
+    </table>
+  `;
+
+        updateDDSim();
+      }
+
+      function updateDDSim() {
+        const bln = parseInt(document.getElementById("dd-target-range").value);
+        document.getElementById("dd-range-val").textContent = bln + " bulan";
+
+        const pengeluaran = state.kebutuhan || 0;
+        const tabungan = state.tabungan || 0;
+        const target = pengeluaran * bln;
+        const kurang = Math.max(0, target - tabungan);
+        const tabunganPerBulan = pengeluaran * 0.1;
+
+        let simText = "";
+        if (kurang <= 0) {
+          simText = `🎉 <strong style="color:var(--green)">Selamat!</strong> Dana darurat ${bln} bulan kamu sudah terpenuhi sebesar ${fmt(tabungan)}.`;
+        } else if (tabunganPerBulan > 0) {
+          const bulanLagi = Math.ceil(kurang / tabunganPerBulan);
+          simText = `Kamu masih kekurangan <strong>${fmt(kurang)}</strong> untuk memenuhi target ${bln} bulan.<br>
+    Jika menabung <strong>${fmt(tabunganPerBulan)} / bulan</strong> (10% omzet), kamu akan mencapai target dalam sekitar <strong style="color:var(--gold)">${bulanLagi} bulan</strong>.`;
+        } else {
+          simText = `Masukkan data keuangan di Panel 1 untuk melihat simulasi.`;
+        }
+        document.getElementById("dd-sim-result").innerHTML = simText;
+      }
+
+      // ============================================================
+      // PANEL 4: SAFE LIMIT
+      // ============================================================
+      function updateSafeLimitLive() {
+        const kas = parseFloat(document.getElementById("sl-kas").value) || 0;
+        const inovasi =
+          parseFloat(document.getElementById("sl-inovasi").value) || 0;
+        const hidup =
+          parseFloat(document.getElementById("sl-hidup").value) || 0;
+        const bufferBln =
+          parseInt(document.getElementById("sl-buffer").value) || 3;
+
+        document.getElementById("sl-buffer-val").textContent =
+          bufferBln + " bulan";
+
+        if (kas <= 0 || inovasi <= 0 || hidup <= 0) {
+          document.getElementById("sl-result-card").style.display = "none";
+          return;
+        }
+
+        document.getElementById("sl-result-card").style.display = "block";
+
+        const bufferWajib = hidup * bufferBln;
+        const totalKeb = inovasi + bufferWajib;
+        const ilr = kas / totalKeb;
+        const ilrDisplay = ilr.toFixed(2);
+
+        document.getElementById("ilr-number").textContent = ilrDisplay;
+        document.getElementById("gauge-val").textContent = ilrDisplay;
+
+        // Gauge
+        const pctGauge = Math.min(ilr / 2, 1); // 2.0 = max full
+        const circumf = 283;
+        const offset = circumf - pctGauge * circumf * 0.75; // 75% of circle
+        const gaugeFill = document.getElementById("gauge-fill");
+        gaugeFill.style.strokeDashoffset = offset;
+
+        let color,
+          status,
+          desc,
+          tips = [];
+        if (ilr >= 1.5) {
+          color = "#4caf7d";
+          status = "hijau";
+          desc = `ILR ${ilrDisplay} — Kondisi keuangan sangat kuat. Kamu aman untuk menjalankan inovasi ini.`;
+          tips = [
+            "Lanjutkan rencana inovasi sesuai jadwal.",
+            "Pertimbangkan untuk menambah porsi investasi dari surplus kas.",
+            "Tetap pantau arus kas bulanan.",
+          ];
+        } else if (ilr >= 1.0) {
+          color = "#f0b429";
+          status = "kuning";
+          desc = `ILR ${ilrDisplay} — Kondisi cukup namun perlu waspada. Pastikan ada cadangan tambahan.`;
+          tips = [
+            "Inovasi bisa dilanjutkan, tapi pantau ketat arus kas.",
+            "Siapkan rencana B jika penjualan di bawah target.",
+            "Tunda pembelian non-esensial sementara waktu.",
+          ];
+        } else {
+          color = "#e05c5c";
+          status = "merah";
+          desc = `ILR ${ilrDisplay} — Risiko tinggi! Kas tidak mencukupi untuk inovasi + buffer keluarga.`;
+          tips = [
+            `Kumpulkan lagi ${fmt(totalKeb - kas)} agar ILR mencapai 1.0.`,
+            "Pertimbangkan inovasi yang lebih kecil / bertahap.",
+            "Jangan gunakan dana dapur untuk biaya inovasi.",
+          ];
+        }
+
+        document.getElementById("ilr-number").style.color = color;
+        document.getElementById("gauge-val").style.color = color;
+        gaugeFill.style.stroke = color;
+        document.getElementById("ilr-desc").textContent = desc;
+        document.getElementById("gauge-status-badge").innerHTML =
+          `<span class="status-badge ${status}">${status === "hijau" ? "✓ Zona Hijau — Aman" : status === "kuning" ? "⚠ Zona Kuning — Waspada" : "✗ Zona Merah — Tunda"}</span>`;
+
+        document.getElementById("sl-breakdown").innerHTML = `
+    <div class="cvp-result">
+      <div class="cvp-row"><span class="label">💰 Kas tersedia</span><span class="value currency">${fmt(kas)}</span></div>
+      <div class="cvp-row"><span class="label">🚀 Biaya inovasi</span><span class="value currency">${fmt(inovasi)}</span></div>
+      <div class="cvp-row"><span class="label">🔒 Buffer wajib (${bufferBln} bln × ${fmt(hidup)})</span><span class="value currency">${fmt(bufferWajib)}</span></div>
+      <div class="cvp-row"><span class="label">📊 Total kebutuhan</span><span class="value currency">${fmt(totalKeb)}</span></div>
+      <div class="cvp-row"><span class="label">⚡ ILR = ${fmt(kas)} ÷ ${fmt(totalKeb)}</span><span class="value highlight">${ilrDisplay}</span></div>
+    </div>
+  `;
+
+        document.getElementById("sl-tips-list").innerHTML = tips
+          .map((t) => `<li>${t}</li>`)
+          .join("");
+      }
+
+      // ============================================================
+      // PANEL 5: CVP
+      // ============================================================
+      function updateCVP() {
+        const fixed =
+          parseFloat(document.getElementById("cvp-fixed").value) || 0;
+        const inovasiBiaya =
+          parseFloat(document.getElementById("cvp-inovasi").value) || 0;
+        const dapur =
+          parseFloat(document.getElementById("cvp-dapur").value) || 0;
+        const harga =
+          parseFloat(document.getElementById("cvp-harga").value) || 0;
+        const varCost =
+          parseFloat(document.getElementById("cvp-var").value) || 0;
+        const laba = parseFloat(document.getElementById("cvp-laba").value) || 0;
+
+        cvpState = { fixed, inovasiBiaya, dapur, harga, varCost, laba };
+
+        const kontribusi = harga - varCost;
+        if (kontribusi <= 0 || harga <= 0) {
+          document.getElementById("cvp-result-section").style.display = "none";
+          return;
+        }
+
+        document.getElementById("cvp-result-section").style.display = "block";
+
+        // BEP Standar
+        const bepStd = fixed / kontribusi;
+        // Behavioral-Adjusted BEP (dengan dapur aman)
+        const totalFixed = fixed + inovasiBiaya + dapur;
+        const bepDapur = totalFixed / kontribusi;
+        // Target penjualan (untuk mencapai laba target)
+        const targetQ = (totalFixed + laba) / kontribusi;
+
+        document.getElementById("cvp-result").innerHTML = `
+    <div class="cvp-row">
+      <span class="label">🔧 Margin kontribusi per unit</span>
+      <span class="value currency">${fmt(kontribusi)}</span>
+    </div>
+    <div class="cvp-row">
+      <span class="label">📊 BEP Standar (bisnis saja)</span>
+      <span class="value">${fmtNum(Math.ceil(bepStd))} unit — ${fmt(Math.ceil(bepStd) * harga)}</span>
+    </div>
+    <div class="cvp-row">
+      <span class="label">🔒 Total beban wajib (bisnis + inovasi + <strong>dapur aman</strong>)</span>
+      <span class="value currency">${fmt(totalFixed)}</span>
+    </div>
+    <div class="cvp-row">
+      <span class="label">🎯 BEP Dapur Aman (semua kebutuhan terpenuhi)</span>
+      <span class="value" style="color:var(--gold-light); font-weight:700;">${fmtNum(Math.ceil(bepDapur))} unit — ${fmt(Math.ceil(bepDapur) * harga)}</span>
+    </div>
+    <div class="cvp-row">
+      <span class="label">🚀 Target Penjualan (untuk laba ${fmt(laba)})</span>
+      <span class="value highlight">${fmtNum(Math.ceil(targetQ))} unit / bulan</span>
+    </div>
+  `;
+
+        // Default skenario normal
+        simSkenario("normal", document.getElementById("sc-normal"));
+      }
+
+      function simSkenario(type, el) {
+        document
+          .querySelectorAll(".scenario-card")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+
+        const { fixed, inovasiBiaya, dapur, harga, varCost, laba } = cvpState;
+        if (!harga || !varCost) return;
+
+        const kontribusi = harga - varCost;
+        const totalFixed = fixed + inovasiBiaya + dapur;
+        const targetQ = (totalFixed + laba) / kontribusi;
+
+        let multiplier = 1;
+        let label = "Normal";
+        let color = "var(--green)";
+
+        if (type === "turun") {
+          multiplier = 0.7;
+          label = "Turun 30%";
+          color = "var(--red)";
+        }
+        if (type === "naik") {
+          multiplier = 1.4;
+          label = "Naik 40%";
+          color = "var(--green)";
+        }
+
+        const actualQ = targetQ * multiplier;
+        const omzetAktual = actualQ * harga;
+        const biayaVar = actualQ * varCost;
+        const labaAktual = omzetAktual - biayaVar - totalFixed;
+
+        const status = labaAktual >= 0 ? "hijau" : "merah";
+        const statusText = labaAktual >= 0 ? "✓ Positif" : "✗ Rugi";
+
+        document.getElementById("sim-result").innerHTML = `
+    <div class="cvp-result">
+      <div style="font-size:12px; font-weight:700; color:${color}; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:12px;">📊 Skenario: ${label}</div>
+      <div class="cvp-row"><span class="label">Unit terjual estimasi</span><span class="value">${fmtNum(Math.floor(actualQ))} unit</span></div>
+      <div class="cvp-row"><span class="label">Omzet estimasi</span><span class="value currency">${fmt(omzetAktual)}</span></div>
+      <div class="cvp-row"><span class="label">Total biaya variabel</span><span class="value currency">${fmt(biayaVar)}</span></div>
+      <div class="cvp-row"><span class="label">Total beban tetap (+ dapur aman)</span><span class="value currency">${fmt(totalFixed)}</span></div>
+      <div class="cvp-row">
+        <span class="label">Laba / Rugi</span>
+        <span class="value"><span class="status-badge ${status}">${statusText}: ${fmt(Math.abs(labaAktual))}</span></span>
+      </div>
+    </div>
+    ${
+      labaAktual < 0
+        ? `
+    <div class="tips-box" style="margin-top:12px;">
+      <div class="tips-title">⚠ Langkah Mitigasi</div>
+      <ul class="tips-list">
+        <li>Kurangi biaya variabel dengan negosiasi harga bahan baku</li>
+        <li>Tunda sebagian biaya inovasi hingga kondisi stabil</li>
+        <li>Tingkatkan harga jual atau tambah varian produk margin tinggi</li>
+      </ul>
+    </div>`
+        : ""
+    }
+  `;
+      }
+
+      // ============================================================
+      // PRE-FILL PANEL 4 & 5 dari Panel 1
+      // ============================================================
+      function preFillPanels() {
+        // Panel 4 (safe limit)
+        if (state.tabungan)
+          document.getElementById("sl-kas").value = state.tabungan;
+        if (state.kebutuhan)
+          document.getElementById("sl-hidup").value = state.kebutuhan;
+
+        // Panel 5 (CVP)
+        if (state.fixedCost)
+          document.getElementById("cvp-fixed").value = state.fixedCost;
+        if (state.inovasiBudget)
+          document.getElementById("cvp-inovasi").value = state.inovasiBudget;
+        if (state.kebutuhan)
+          document.getElementById("cvp-dapur").value = state.kebutuhan;
+        if (state.hargaJual)
+          document.getElementById("cvp-harga").value = state.hargaJual;
+        if (state.hargaVar)
+          document.getElementById("cvp-var").value = state.hargaVar;
+        if (state.targetLaba)
+          document.getElementById("cvp-laba").value = state.targetLaba;
+      }
+    </script>
+  </body>
+</html>
